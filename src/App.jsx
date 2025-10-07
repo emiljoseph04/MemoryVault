@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Header from "./components/Header";  // Navbar
 import Footer from "./components/Footer";  // Footer
@@ -11,7 +11,7 @@ import CapsuleDetail from "./pages/CapsuleDetail";
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -20,7 +20,7 @@ function App() {
         <Route path="/capsule/:id" element={<CapsuleDetail />} />
       </Routes>
       <Footer />
-    </Router>
+    </BrowserRouter>
   );
 }
 

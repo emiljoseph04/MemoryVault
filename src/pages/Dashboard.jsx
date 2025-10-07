@@ -3,11 +3,36 @@ import { Link } from "react-router-dom";
 
 function Dashboard() {
   const [capsules, setCapsules] = useState([]);
+  const [filteredCapsules, setFilteredCapsules] = useState([]);
+  const [filter, setFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState("newest");
 
   useEffect(() => {
     const storedCapsules = JSON.parse(localStorage.getItem("capsules")) || [];
     setCapsules(storedCapsules);
+    setFilteredCapsules(storedCapsules);
   }, []);
+
+  // 🧠 Filter and Sort Logic
+  useEffect(() => {
+    let updated = [...capsules];
+
+    // Filter
+    if (filter === "locked") {
+      updated = updated.filter(c => new Date(c.unlockDate) > new Date());
+    } else if (filter === "unlocked") {
+      updated = updated.filter(c => new Date(c.unlockDate) <= new Date());
+    }
+
+    // Sort
+    if (sortOrder === "newest") {
+      updated.sort((a, b) => new Date(b.unlockDate) - new Date(a.unlockDate));
+    } else if (sortOrder === "oldest") {
+      updated.sort((a, b) => new Date(a.unlockDate) - new Date(b.unlockDate));
+    }
+
+    setFilteredCapsules(updated);
+  }, [filter, sortOrder, capsules]);
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this capsule?")) {
@@ -19,7 +44,6 @@ function Dashboard() {
 
   const handleEdit = (capsule) => {
     localStorage.setItem("editingCapsule", JSON.stringify(capsule));
-
     window.location.href = "/createcapsule";
   };
 
@@ -32,7 +56,29 @@ function Dashboard() {
         My Time Capsules
       </h2>
 
-      {capsules.length === 0 ? (
+      {/* 🎚️ Filter & Sort Controls */}
+      <div className="d-flex justify-content-center gap-3 mb-4">
+        <select
+          className="form-select w-auto"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        >
+          <option value="all">All Capsules</option>
+          <option value="locked">Locked Capsules</option>
+          <option value="unlocked">Unlocked Capsules</option>
+        </select>
+
+        <select
+          className="form-select w-auto"
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+        >
+          <option value="newest">Sort by Newest</option>
+          <option value="oldest">Sort by Oldest</option>
+        </select>
+      </div>
+
+      {filteredCapsules.length === 0 ? (
         <p className="text-center">
           No capsules found.{" "}
           <Link
@@ -44,7 +90,7 @@ function Dashboard() {
         </p>
       ) : (
         <div className="row">
-          {capsules.map((capsule) => {
+          {filteredCapsules.map((capsule) => {
             const isLocked = new Date(capsule.unlockDate) > new Date();
 
             return (
@@ -52,10 +98,8 @@ function Dashboard() {
                 <div
                   className="card h-100 shadow-sm border-0 rounded-4"
                   style={{
-                    backgroundColor: "#f9f5ff"
-                   
+                    backgroundColor: "#f9f5ff",
                   }}
-                  
                 >
                   <div className="card-body d-flex flex-column text-center">
                     <h5
