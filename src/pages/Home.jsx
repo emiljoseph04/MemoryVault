@@ -16,7 +16,7 @@ function Home() {
             <Link to="/createcapsule" className="btn btn-light btn-lg mx-2 px-4">
               Create Capsule
             </Link>
-            <Link to="/dashboard" className="btn btn-outline-light btn-lg mx-2 px-4">
+            <Link to="/dashboard" className="btn btn-outline-light btn-lg mx-2 px-4 mt-3">
               View Capsules
             </Link>
           </div>
