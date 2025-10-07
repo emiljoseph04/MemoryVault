@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function CreateCapsule() {
   const [title, setTitle] = useState("");
@@ -8,6 +9,8 @@ function CreateCapsule() {
   const [capsules, setCapsules] = useState([]);
   const [editId, setEditId] = useState(null);
   const [message, setMessage] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedCapsules = JSON.parse(localStorage.getItem("capsules")) || [];
@@ -23,6 +26,15 @@ function CreateCapsule() {
     }
   }, []);
 
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setUnlockDate("");
+    setMediaLink("");
+    setEditId(null);
+    localStorage.removeItem("editingCapsule");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -35,12 +47,8 @@ function CreateCapsule() {
     };
 
     let updatedCapsules;
-
     if (editId) {
-      updatedCapsules = capsules.map((c) =>
-        c.id === editId ? newCapsule : c
-      );
-      localStorage.removeItem("editingCapsule");
+      updatedCapsules = capsules.map((c) => (c.id === editId ? newCapsule : c));
       setMessage("Capsule updated successfully!");
     } else {
       updatedCapsules = [...capsules, newCapsule];
@@ -49,12 +57,7 @@ function CreateCapsule() {
 
     localStorage.setItem("capsules", JSON.stringify(updatedCapsules));
     setCapsules(updatedCapsules);
-
-    setTitle("");
-    setDescription("");
-    setUnlockDate("");
-    setMediaLink("");
-    setEditId(null);
+    resetForm();
   };
 
   return (
@@ -111,7 +114,7 @@ function CreateCapsule() {
           />
         </div>
 
-        <div className="text-center">
+        <div className="text-center d-flex flex-column flex-sm-row justify-content-center gap-2">
           <button
             type="submit"
             className="btn px-4 py-2 fw-semibold"
@@ -123,6 +126,20 @@ function CreateCapsule() {
             }}
           >
             {editId ? "Update Capsule" : "Save Capsule"}
+          </button>
+
+          <button
+            type="button"
+            onClick={resetForm}
+            className="btn px-4 py-2 fw-semibold"
+            style={{
+              backgroundColor: "#d8c3ff",
+              color: "#4b0082",
+              borderRadius: "25px",
+              border: "none",
+            }}
+          >
+            Clear
           </button>
         </div>
       </form>
